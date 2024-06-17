@@ -4,8 +4,7 @@
   "description": "The image proxy works with cloudflare pages, improve the security by proxying traffic",
   "main": "index.js",
   "scripts": {
-    "start": "npm install && npm start", 
-    "build": "echo 'No build step needed for this project'"
+    "start": "npm install && npm start"
   },
   "keywords": [],
   "author": "",
