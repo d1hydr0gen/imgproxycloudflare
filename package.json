@@ -4,6 +4,7 @@
   "description": "Image proxy for Cloudflare Pages to improve security by proxying traffic",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "build": "echo 'No build steps required'"
   },
   "keywords": [],
