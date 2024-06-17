@@ -1,31 +1,50 @@
-// api/imageProxy.js
+// index.js
 
-const fetch = require('node-fetch');
+const express = require('express');
 const sharp = require('sharp');
+const fetch = require('node-fetch');
+const app = express();
 
-const handler = async (request, response) => {
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+
+app.get('/api/imageProxy', async (req, res) => {
   try {
-    const { url } = request.query;
+    const { url } = req.query;
 
     if (!url) {
-      return response.status(400).json({ error: 'Missing url parameter' });
+      return res.status(400).json({ error: 'Missing url parameter' });
     }
 
-    const imageResponse = await fetch(url);
-    const imageBuffer = await imageResponse.buffer();
+    // Fetch image data
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image (${response.status}): ${response.statusText}`);
+    }
 
-    // Convert image to WebP format and compress if needed
-    const resizedImageBuffer = await sharp(imageBuffer)
-      .webp({ quality: 80 }) // Adjust quality as needed
-      .resize({ fit: 'inside', width: 1200, height: 1200 }) // Resize image as needed
+    const imageBuffer = await response.buffer();
+    const imageSize = imageBuffer.length;
+
+    // Check if image size exceeds maximum allowed size
+    if (imageSize > MAX_IMAGE_SIZE) {
+      return res.status(413).json({ error: 'Image size exceeds maximum allowed size (5MB)' });
+    }
+
+    // Convert image to WebP format
+    const webpData = await sharp(imageBuffer)
+      .webp()
       .toBuffer();
 
-    response.setHeader('Content-Type', 'image/webp');
-    response.send(resizedImageBuffer);
+    // Set response headers for WebP image
+    res.set('Content-Type', 'image/webp');
+    res.send(webpData);
   } catch (error) {
     console.error('Error fetching and serving image:', error);
-    response.status(500).json({ error: 'Failed to fetch image' });
+    res.status(500).json({ error: 'Failed to fetch image' });
   }
-};
+});
 
-module.exports = handler;
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

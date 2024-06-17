@@ -1,0 +1,17 @@
+{
+  "name": "imgproxycloudflare",
+  "version": "1.0.0",
+  "description": "The image proxy works with cloudflare pages, improve the security by proxying traffic",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2",
+    "sharp": "^0.33.4"
+  }
+}
